@@ -1,0 +1,471 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>About SafePath</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        .about-page {
+            min-height: 100vh;
+            padding: 80px 20px;
+        }
+
+        .about-container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .about-hero {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .about-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 30px;
+            background: rgba(59, 130, 246, 0.12);
+            color: #2563eb;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+
+        .about-hero h1 {
+            font-size: 48px;
+            margin-bottom: 18px;
+        }
+
+        .about-hero h1 span {
+            color: #2563eb;
+        }
+
+        .about-hero p {
+            max-width: 750px;
+            margin: auto;
+            font-size: 18px;
+            line-height: 1.8;
+            opacity: 0.8;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .about-card {
+            padding: 30px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(128, 128, 128, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .about-card h2 {
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .about-card p {
+            line-height: 1.7;
+            opacity: 0.8;
+        }
+
+        .features {
+            margin-top: 20px;
+            padding-left: 20px;
+        }
+
+        .features li {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .technology-section {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .technology-section h2 {
+            font-size: 30px;
+            margin-bottom: 25px;
+        }
+
+        .tech-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .tech-item {
+            padding: 12px 20px;
+            border-radius: 30px;
+            background: rgba(37, 99, 235, 0.1);
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .about-actions {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .about-button {
+            display: inline-block;
+            padding: 14px 28px;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .about-button:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+
+        /* THIS IS IMPORTANT */
+#notificationPanel.show {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+#notificationPanel .notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#notificationPanel .notification-header h3 {
+    margin: 0;
+    color: white;
+}
+
+#notificationPanel .notification-header span {
+    background: #2563eb;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+#notificationPanel .notification-item {
+    display: flex;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+#notificationPanel .notification-item:last-child {
+    border-bottom: none;
+}
+
+#notificationPanel .notification-item i {
+    color: #38bdf8;
+    font-size: 18px;
+}
+
+#notificationPanel .notification-item strong {
+    color: white;
+}
+
+#notificationPanel .notification-item p {
+    margin: 5px 0 0;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+/* Meet Our Team */
+.team-section {
+    margin: 70px auto 40px;
+    max-width: 900px;
+    padding: 45px 30px;
+    text-align: center;
+    border-radius: 25px;
+    background: linear-gradient(135deg, #111c3d, #182b5c, #241b4f);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.team-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(80, 120, 255, 0.18);
+    color: #7da2ff;
+    font-size: 28px;
+}
+
+.team-section h2 {
+    color: white;
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.team-section p {
+    color: #b9c4df;
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 28px;
+}
+
+.team-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 30px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    background: linear-gradient(135deg, #4f7cff, #7657ff);
+    box-shadow: 0 10px 25px rgba(79, 124, 255, 0.3);
+    transition: 0.3s ease;
+}
+
+.team-button:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(79, 124, 255, 0.45);
+}
+
+        @media (max-width: 768px) {
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-hero h1 {
+                font-size: 36px;
+            }
+
+            .about-page {
+                padding: 50px 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="about-page">
+
+        <div class="about-container">
+
+            <!-- Hero -->
+            <section class="about-hero">
+
+                <div class="about-badge">
+                    🛡️ Intelligent Route Safety
+                </div>
+
+                <h1>
+                    About <span>SafePath</span>
+                </h1>
+
+                <p>
+                    SafePath is an intelligent safe route recommendation
+                    system designed to help users identify safer routes
+                    by combining road-network information, safety
+                    infrastructure, crime context and machine learning.
+                </p>
+
+            </section>
+
+
+            <!-- Main Information -->
+            <section class="about-grid">
+
+                <div class="about-card">
+
+                    <h2>🎯 Our Objective</h2>
+
+                    <p>
+                        The main objective of SafePath is to recommend
+                        routes that provide a better balance between
+                        travel distance and road safety.
+                    </p>
+
+                    <p>
+                        Instead of considering only the shortest route,
+                        SafePath evaluates safety-related information
+                        associated with road segments.
+                    </p>
+
+                </div>
+
+
+                <div class="about-card">
+
+                    <h2>🚦 How SafePath Works</h2>
+
+                    <ul class="features">
+
+                        <li>
+                            📍 Uses road-network data to represent
+                            available routes.
+                        </li>
+
+                        <li>
+                            🏥 Considers nearby hospitals and emergency
+                            facilities.
+                        </li>
+
+                        <li>
+                            👮 Considers nearby police stations.
+                        </li>
+
+                        <li>
+                            📹 Considers CCTV surveillance coverage.
+                        </li>
+
+                        <li>
+                            💡 Considers street-light availability.
+                        </li>
+
+                        <li>
+                            🛣️ Calculates safety scores for road segments.
+                        </li>
+
+                        <li>
+                            🤖 Uses a Random Forest classification model
+                            for safety-category prediction.
+                        </li>
+
+                    </ul>
+
+                </div>
+
+
+                <div class="about-card">
+
+                    <h2>🗺️ Safe Route Recommendation</h2>
+
+                    <p>
+                        SafePath uses a routing graph created from the
+                        road network. Each road segment contains safety
+                        information that can influence route selection.
+                    </p>
+
+                    <p>
+                        The system attempts to find a route that provides
+                        a practical balance between road distance and
+                        safety rather than simply selecting the shortest
+                        road.
+                    </p>
+
+                </div>
+
+
+                <div class="about-card">
+
+                    <h2>🤖 Machine Learning</h2>
+
+                    <p>
+                        A Random Forest classifier is used to classify
+                        road segments into four safety categories:
+                    </p>
+
+                    <ul class="features">
+
+                        <li>🟢 Very Safe</li>
+                        <li>🟢 Safe</li>
+                        <li>🟠 Moderate</li>
+                        <li>🔴 High Risk</li>
+
+                    </ul>
+
+                </div>
+
+            </section>
+
+
+            <!-- Technologies -->
+            <section class="technology-section">
+
+                <h2>💻 Technologies Used</h2>
+
+                <div class="tech-list">
+
+                    <span class="tech-item">Python</span>
+                    <span class="tech-item">Django</span>
+                    <span class="tech-item">HTML</span>
+                    <span class="tech-item">CSS</span>
+                    <span class="tech-item">JavaScript</span>
+                    <span class="tech-item">Leaflet.js</span>
+                    <span class="tech-item">NetworkX</span>
+                    <span class="tech-item">GeoPandas</span>
+                    <span class="tech-item">Scikit-learn</span>
+                    <span class="tech-item">OpenStreetMap</span>
+
+                </div>
+
+            </section>
+    
+
+
+        <!-- Meet Our Team -->
+        <section class="team-section">
+
+            <div class="team-icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <h2>Meet Our Team</h2>
+
+            <p>
+                Discover the people behind SafePath and learn about
+                our team members and their contributions to the project.
+            </p>
+
+            <a href="/team/" class="team-button">
+                <i class="fa-solid fa-users"></i>
+                Meet Our Team
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+        </section>
+
+
+        
+
+
+        <!-- Button -->
+            <div class="about-actions">
+
+                <a href="/" class="about-button">
+                    ← Back to Home
+                </a>
+
+                <a href="/route/" class="about-button" style="margin-left:10px;">
+                    Find a Safe Route →
+                </a>
+
+
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

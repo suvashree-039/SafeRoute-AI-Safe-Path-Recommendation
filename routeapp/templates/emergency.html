@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SafePath Emergency</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #08111f;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 35px 20px;
+            background: #0d1b2a;
+        }
+
+        .header h1 {
+            color: #ff4d5a;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #aab8c6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+
+        .emergency-card {
+            background: #102235;
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sos-button {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: none;
+            background: #ff4d5a;
+            color: white;
+            font-size: 38px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 35px rgba(255, 77, 90, 0.35);
+            margin: 30px auto;
+            transition: 0.2s;
+        }
+
+        .sos-button:hover {
+            transform: scale(1.05);
+        }
+
+        .emergency-info {
+            margin-top: 20px;
+            color: #c8d3df;
+            line-height: 1.7;
+        }
+
+        .contacts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .contact {
+            background: #172b40;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .contact h3 {
+            color: #20e0ff;
+            margin-bottom: 8px;
+        }
+
+        .contact a {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 22px;
+            background: #20e0ff;
+            color: #061018;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .status {
+            margin-top: 20px;
+            color: #00e6a8;
+            font-weight: bold;
+            min-height: 24px;
+        }
+
+        @media (max-width: 700px) {
+
+            .contacts {
+                grid-template-columns: 1fr;
+            }
+
+            .sos-button {
+                width: 150px;
+                height: 150px;
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+
+        <h1>🚨 Emergency Assistance</h1>
+
+        <p>SafePath emergency support</p>
+
+    </div>
+
+
+    <div class="container">
+
+        <div class="emergency-card">
+
+            <h2>Need Immediate Help?</h2>
+
+            <p class="emergency-info">
+                Press the SOS button to quickly access emergency services.
+            </p>
+
+
+            <button
+                class="sos-button"
+                onclick="triggerSOS()">
+                SOS
+            </button>
+
+
+            <div
+                id="status"
+                class="status">
+            </div>
+
+
+            <div class="contacts">
+
+                <div class="contact">
+
+                    <h3>🚓 Police</h3>
+
+                    <a href="tel:112">
+                        112
+                    </a>
+
+                </div>
+
+
+                <div class="contact">
+
+                    <h3>🚑 Emergency</h3>
+
+                    <a href="tel:112">
+                        112
+                    </a>
+
+                </div>
+
+
+                <div class="contact">
+
+                    <h3>🔥 Fire</h3>
+
+                    <a href="tel:112">
+                        112
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="/"
+                class="back-btn">
+                ← Back to Home
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        function triggerSOS() {
+
+            const status =
+                document.getElementById("status");
+
+            status.textContent =
+                "🚨 Emergency mode activated. Call 112 for immediate assistance.";
+
+        }
+
+    </script>
+
+</body>
+</html>

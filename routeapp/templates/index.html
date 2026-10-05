@@ -1,0 +1,903 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SafeRoute | AI-Based Safe Path Recommendation</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+/* ================= NOTIFICATION PANEL ================= */
+
+#notificationPanel {
+    background: #ffffff !important;
+    color: #172033 !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18) !important;
+}
+
+/* Header */
+#notificationPanel .notification-header h3 {
+    color: #172033 !important;
+}
+
+#notificationPanel .notification-header span {
+    color: #06b6d4 !important;
+}
+
+/* Notification items */
+#notificationPanel .notification-item {
+    background: #f8fafc !important;
+    color: #172033 !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+/* Icons */
+#notificationPanel .notification-item > i {
+    color: #2563eb !important;
+}
+
+/* Titles */
+#notificationPanel .notification-item strong {
+    color: #172033 !important;
+}
+
+/* Description */
+#notificationPanel .notification-item p {
+    color: #64748b !important;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<header class="navbar">
+
+    <div class="nav-container">
+
+        <a href="/" class="brand">
+            <span class="brand-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </span>
+            <span>Safe<span class="brand-highlight">Route</span></span>
+        </a>
+
+        <nav class="nav-menu" id="navMenu">
+
+            <a href="/" class="nav-link active">
+                <i class="fa-solid fa-house"></i>
+                Home
+            </a>
+
+            <a href="/route/" class="nav-link">
+                <i class="fa-solid fa-route"></i>
+                Safe Route
+            </a>
+
+            <a href="/safety-map/" class="nav-link">
+                <i class="fa-solid fa-map-location-dot"></i>
+                Safety Map
+            </a>
+
+            <a href="/dashboard/" class="nav-link">
+                <i class="fa-solid fa-chart-line"></i>
+                Dashboard
+            </a>
+
+            <a href="/emergency/" class="nav-link emergency-link">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Emergency
+            </a>
+
+            <a href="/about/" class="nav-link">
+                <i class="fa-solid fa-circle-info"></i>
+                About
+            </a>
+           
+
+        </nav>
+
+
+        <div class="nav-actions">
+
+           <button
+            class="icon-button"
+            id="notificationBtn"
+            title="Notifications"
+            onclick="toggleNotifications(event)">
+
+            <i class="fa-regular fa-bell"></i>
+            <span class="notification-dot"></span>
+
+        </button>
+
+            <button class="icon-button" id="themeBtn"
+                    title="Change theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+
+            <a href="/route/" class="get-started-btn">
+                Get Started
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- ================= NOTIFICATION DROPDOWN ================= -->
+
+<div class="notification-panel" id="notificationPanel" style="display: none;">
+
+    <div class="notification-header">
+        <h3>Notifications</h3>
+        <span>3 new</span>
+    </div>
+
+    <div class="notification-item">
+        <i class="fa-solid fa-shield-check"></i>
+        <div>
+            <strong>Route Safety Updated</strong>
+            <p>Your recommended route is currently safe.</p>
+        </div>
+    </div>
+
+    <div class="notification-item">
+        <i class="fa-solid fa-location-dot"></i>
+        <div>
+            <strong>Nearby Police Station</strong>
+            <p>Police support is available nearby.</p>
+        </div>
+    </div>
+
+    <div class="notification-item">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <div>
+            <strong>Safety Alert</strong>
+            <p>Moderate risk detected in one area.</p>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <div class="hero-grid"></div>
+
+    <div class="hero-container">
+
+        <!-- LEFT CONTENT -->
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+                <span class="pulse-dot"></span>
+                AI-powered safety intelligence
+            </div>
+
+            <h1>
+                Your Safety.
+                <br>
+                <span>Your Route.</span>
+                <br>
+                Your Choice.
+            </h1>
+
+            <p>
+                AI-powered safe path recommendations that help you
+                choose safer routes through your city.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="/route/" class="primary-btn">
+                    <i class="fa-solid fa-route"></i>
+                    Find Safe Route
+                </a>
+
+                <a href="/safety-map/" class="secondary-btn">
+                    <i class="fa-solid fa-map"></i>
+                    Explore Safety Map
+                </a>
+
+            </div>
+
+
+            <!-- HERO STATS -->
+
+            <div class="hero-stats">
+
+                <div class="hero-stat">
+                    <strong>92%</strong>
+                    <span>Safety Score</span>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <div class="hero-stat">
+                    <strong>24</strong>
+                    <span>Safe Routes</span>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <div class="hero-stat">
+                    <strong>16</strong>
+                    <span>Emergency Points</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- HERO VISUAL -->
+
+        <div class="hero-visual">
+
+            <div class="map-window">
+
+                <div class="map-topbar">
+
+                    <div class="map-location">
+                        <i class="fa-solid fa-location-dot"></i>
+                        Bhubaneswar, Odisha
+                    </div>
+
+                    <div class="map-status">
+                        <span></span>
+                        Live Safety Data
+                    </div>
+
+                </div>
+
+
+                <!-- MAP GRID -->
+
+                <div class="map-area">
+
+                    <div class="map-grid-lines"></div>
+
+                    <!-- Roads -->
+
+                    <div class="road road-1"></div>
+                    <div class="road road-2"></div>
+                    <div class="road road-3"></div>
+                    <div class="road road-4"></div>
+                    <div class="road road-5"></div>
+
+                    <!-- Safe Route -->
+
+                    <svg class="route-svg"
+                         viewBox="0 0 600 420"
+                         preserveAspectRatio="none">
+
+                        <path
+                            d="M70 350
+                               C150 320 120 250 220 270
+                               C300 290 290 180 370 190
+                               C450 205 430 110 530 85"
+                            class="route-glow">
+                        </path>
+
+                        <path
+                            d="M70 350
+                               C150 320 120 250 220 270
+                               C300 290 290 180 370 190
+                               C450 205 430 110 530 85"
+                            class="route-line">
+                        </path>
+
+                    </svg>
+
+
+                    <!-- Location Markers -->
+
+                    <div class="map-marker start-marker">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                    <div class="map-marker destination-marker">
+                        <i class="fa-solid fa-flag-checkered"></i>
+                    </div>
+
+
+                    <!-- Safety Points -->
+
+                    <div class="safety-point safe-point point-one">
+                        <span></span>
+                    </div>
+
+                    <div class="safety-point safe-point point-two">
+                        <span></span>
+                    </div>
+
+                    <div class="safety-point moderate-point point-three">
+                        <span></span>
+                    </div>
+
+                    <div class="safety-point risk-point point-four">
+                        <span></span>
+                    </div>
+
+
+                    <!-- Safety Score Floating Card -->
+
+                    <div class="floating-score-card">
+
+                        <div class="score-icon">
+                            <i class="fa-solid fa-shield-heart"></i>
+                        </div>
+
+                        <div>
+                            <small>Route Safety</small>
+                            <strong>92<span>/100</span></strong>
+                            <label>
+                                <i class="fa-solid fa-circle"></i>
+                                Very Safe
+                            </label>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Emergency Floating Card -->
+
+                    <div class="floating-emergency-card">
+
+                        <div class="emergency-icon">
+                            <i class="fa-solid fa-phone-volume"></i>
+                        </div>
+
+                        <div>
+                            <strong>Emergency Support</strong>
+                            <span>3 nearby</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MOBILE PHONE MOCKUP -->
+
+            <div class="phone-mockup">
+
+                <div class="phone-speaker"></div>
+
+                <div class="phone-screen">
+
+                    <div class="phone-header">
+
+                        <i class="fa-solid fa-bars"></i>
+
+                        <strong>SafeRoute</strong>
+
+                        <i class="fa-regular fa-bell"></i>
+
+                    </div>
+
+                    <div class="phone-greeting">
+                        <small>Good morning</small>
+                        <h3>Where are you going?</h3>
+                    </div>
+
+                    <div class="phone-search">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Current location</span>
+                    </div>
+
+                    <div class="phone-search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>Enter destination</span>
+                    </div>
+
+                    <div class="phone-safety-card">
+
+                        <div class="mini-shield">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+
+                        <div>
+                            <small>Area Safety</small>
+                            <strong>92%</strong>
+                        </div>
+
+                        <span class="safe-label">SAFE</span>
+
+                    </div>
+
+                    <button class="phone-route-btn">
+                        Find Safe Route
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= TRUST BAR ================= -->
+
+<section class="trust-section">
+
+    <div class="trust-container">
+
+        <span>Designed for safer journeys</span>
+
+        <div class="trust-item">
+            <i class="fa-solid fa-shield-halved"></i>
+            Safety First
+        </div>
+
+        <div class="trust-item">
+            <i class="fa-solid fa-brain"></i>
+            AI Intelligence
+        </div>
+
+        <div class="trust-item">
+            <i class="fa-solid fa-location-crosshairs"></i>
+            Location Aware
+        </div>
+
+        <div class="trust-item">
+            <i class="fa-solid fa-user-shield"></i>
+            User Focused
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= WHY SAFEROUTE ================= -->
+
+<section class="features-section">
+
+    <div class="section-container">
+
+        <div class="section-heading">
+
+            <span class="section-tag">
+                <i class="fa-solid fa-sparkles"></i>
+                SAFER JOURNEYS
+            </span>
+
+            <h2>
+                Why choose
+                <span>SafeRoute?</span>
+            </h2>
+
+            <p>
+                Smart safety intelligence designed to help you
+                make better route decisions wherever you go.
+            </p>
+
+        </div>
+
+
+        <div class="feature-grid">
+
+            <!-- Feature 1 -->
+
+            <div class="feature-card">
+
+                <div class="feature-icon blue-icon">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+
+                <h3>AI-Based Risk Prediction</h3>
+
+                <p>
+                    Analyze multiple safety factors to identify
+                    potential road and area risks.
+                </p>
+
+                <a href="/dashboard/">
+                    Explore analytics
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+
+            <!-- Feature 2 -->
+
+            <div class="feature-card">
+
+                <div class="feature-icon cyan-icon">
+                    <i class="fa-solid fa-route"></i>
+                </div>
+
+                <h3>Safe Route Recommendation</h3>
+
+                <p>
+                    Compare routes based on safety, distance
+                    and estimated travel time.
+                </p>
+
+                <a href="/route/">
+                    Find a route
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+
+            <!-- Feature 3 -->
+
+            <div class="feature-card">
+
+                <div class="feature-icon green-icon">
+                    <i class="fa-solid fa-tower-broadcast"></i>
+                </div>
+
+                <h3>Safety Information</h3>
+
+                <p>
+                    View safety information including lighting,
+                    surveillance and nearby services.
+                </p>
+
+                <a href="/safety-map/">
+                    View safety map
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+
+            <!-- Feature 4 -->
+
+            <div class="feature-card">
+
+                <div class="feature-icon purple-icon">
+                    <i class="fa-solid fa-hospital"></i>
+                </div>
+
+                <h3>Emergency Services</h3>
+
+                <p>
+                    Quickly discover nearby police stations,
+                    hospitals and emergency support points.
+                </p>
+
+                <a href="/emergency/">
+                    Emergency support
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+
+            <!-- Feature 5 -->
+
+            <div class="feature-card">
+
+                <div class="feature-icon orange-icon">
+                    <i class="fa-solid fa-chart-area"></i>
+                </div>
+
+                <h3>Crime Risk Analysis</h3>
+
+                <p>
+                    Understand safety patterns through
+                    interactive risk and safety analytics.
+                </p>
+
+                <a href="/dashboard/">
+                    View dashboard
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+
+            <!-- Feature 6 -->
+
+            <div class="feature-card emergency-feature">
+
+                <div class="feature-icon red-icon">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+
+                <h3>Emergency SOS</h3>
+
+                <p>
+                    Access emergency assistance and safety
+                    tools whenever you need immediate help.
+                </p>
+
+                <a href="/emergency/">
+                    Open SOS
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= HOW IT WORKS ================= -->
+
+<section class="how-section">
+
+    <div class="section-container">
+
+        <div class="section-heading">
+
+            <span class="section-tag">
+                HOW IT WORKS
+            </span>
+
+            <h2>
+                Safer decisions in
+                <span>three steps.</span>
+            </h2>
+
+        </div>
+
+
+        <div class="steps-grid">
+
+            <div class="step-card">
+
+                <div class="step-number">01</div>
+
+                <div class="step-icon">
+                    <i class="fa-solid fa-location-dot"></i>
+                </div>
+
+                <h3>Choose your destination</h3>
+
+                <p>
+                    Enter your starting point and destination
+                    to begin your safe route search.
+                </p>
+
+            </div>
+
+
+            <div class="step-card">
+
+                <div class="step-number">02</div>
+
+                <div class="step-icon">
+                    <i class="fa-solid fa-microchip"></i>
+                </div>
+
+                <h3>Analyze safety</h3>
+
+                <p>
+                    SafeRoute evaluates road safety information
+                    and identifies safer route options.
+                </p>
+
+            </div>
+
+
+            <div class="step-card">
+
+                <div class="step-number">03</div>
+
+                <div class="step-icon">
+                    <i class="fa-solid fa-shield-heart"></i>
+                </div>
+
+                <h3>Choose your safe path</h3>
+
+                <p>
+                    Compare available routes and choose the
+                    option that best fits your safety needs.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= CTA ================= -->
+
+<section class="cta-section">
+
+    <div class="cta-glow"></div>
+
+    <div class="cta-content">
+
+        <div class="cta-icon">
+            <i class="fa-solid fa-shield-heart"></i>
+        </div>
+
+        <h2>
+            Ready to find a safer path?
+        </h2>
+
+        <p>
+            Explore routes around Bhubaneswar with SafeRoute's
+            intelligent safety analysis.
+        </p>
+
+        <a href="/route/" class="primary-btn">
+            Find Safe Route
+            <i class="fa-solid fa-arrow-right"></i>
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer class="footer">
+
+    <div class="footer-container">
+
+        <div class="footer-brand">
+
+            <a href="/" class="brand">
+                <span class="brand-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </span>
+
+                <span>
+                    Safe<span class="brand-highlight">Route</span>
+                </span>
+            </a>
+
+            <p>
+                AI-based safe path recommendation system
+                designed for safer journeys.
+            </p>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <div>
+                <h4>Product</h4>
+                <a href="/route/">Safe Route</a>
+                <a href="/safety-map/">Safety Map</a>
+                <a href="/dashboard/">Dashboard</a>
+            </div>
+
+            <div>
+                <h4>Safety</h4>
+                <a href="/emergency/">Emergency</a>
+                <a href="/safety-map/">Safety Zones</a>
+                <a href="/about/">How It Works</a>
+
+            </div>
+
+            <div>
+                <h4>Company</h4>
+                <a href="/about/">About</a>
+                <a href="/about/">Technology</a>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <span>
+            © 2026 SafeRoute. Demo project.
+        </span>
+
+        <span>
+            Built for safer journeys.
+        </span>
+
+    </div>
+
+</footer>
+
+
+<!-- ================= TOAST ================= -->
+
+<div class="toast" id="toast">
+
+    <i class="fa-solid fa-circle-check"></i>
+
+    <span id="toastMessage">
+        Welcome to SafeRoute
+    </span>
+
+</div>
+
+
+<!-- MAIN JAVASCRIPT -->
+
+<script src="{% static 'js/script.js' %}"></script>
+<script src="{% static 'js/theme.js' %}"></script>
+
+
+
+
+
+<script>
+function toggleNotifications(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const panel = document.getElementById("notificationPanel");
+
+    if (!panel) {
+        alert("Panel not found!");
+        return;
+    }
+
+    const isHidden = panel.getAttribute("data-open") !== "true";
+
+    if (isHidden) {
+
+        panel.style.setProperty("display", "block", "important");
+        panel.style.setProperty("position", "fixed", "important");
+        panel.style.setProperty("top", "80px", "important");
+        panel.style.setProperty("right", "30px", "important");
+        panel.style.setProperty("width", "350px", "important");
+        panel.style.setProperty("background", "#111827", "important");
+        panel.style.setProperty("color", "white", "important");
+        panel.style.setProperty("padding", "20px", "important");
+        panel.style.setProperty("border-radius", "16px", "important");
+        panel.style.setProperty("z-index", "999999", "important");
+        panel.style.setProperty("box-shadow", "0 20px 50px rgba(0,0,0,0.4)", "important");
+        panel.style.setProperty("opacity", "1", "important");
+        panel.style.setProperty("visibility", "visible", "important");
+        panel.style.setProperty("transform", "translateY(0)", "important");
+
+        panel.setAttribute("data-open", "true");
+
+    } else {
+
+        panel.style.setProperty("display", "none", "important");
+        panel.setAttribute("data-open", "false");
+
+    }
+}
+</script>
+</body>
+</html>

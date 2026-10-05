@@ -1,0 +1,598 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SafeRoute | Safety Map</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        .safety-map-page {
+            min-height: 100vh;
+            padding: 110px 5% 50px;
+            background: #f5f9fa;
+        }
+
+        .map-heading {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .map-heading h1 {
+            font-size: 42px;
+            margin-bottom: 8px;
+        }
+
+        .map-heading h1 span {
+            color: #18b6d9;
+        }
+
+        .map-heading p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .safety-map-card {
+            max-width: 1400px;
+            margin: auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,.12);
+        }
+
+        .map-top {
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            background: #ffffff;
+            border-bottom: 1px solid #e8eef0;
+        }
+        .map-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #12343b;
+        }
+
+        .map-title i {
+            color: #18b6d9;
+            margin-right: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #344054;
+        }
+
+        .legend {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 14px;
+        }
+
+        .dot {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .very-safe {
+            background: #16a34a;
+        }
+
+        .safe {
+            background: #22c55e;
+        }
+
+        .moderate {
+            background: #f59e0b;
+        }
+
+        .high-risk {
+            background: #ef4444;
+        }
+
+        /* REAL MAP */
+        #safetyMap {
+            width: 100%;
+            height: 650px;
+        }
+
+        .map-info {
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .map-stats {
+            display: flex;
+            gap: 35px;
+            flex-wrap: wrap;
+        }
+
+        .map-stat strong {
+            display: block;
+            font-size: 22px;
+        }
+
+        .map-stat span {
+            font-size: 13px;
+            color: #777;
+        }
+
+        .road-info {
+            padding: 15px 20px;
+            background: #f4f8f9;
+            border-radius: 12px;
+            min-width: 230px;
+        }
+
+        .road-info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .road-info span {
+            color: #555;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            padding: 12px 22px;
+            border-radius: 10px;
+            background: #18b6d9;
+            color: white;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            opacity: .9;
+        }
+
+        @media (max-width: 700px) {
+            .safety-map-page {
+                padding: 95px 15px 30px;
+            }
+
+            .map-heading h1 {
+                font-size: 32px;
+            }
+
+            #safetyMap {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<section class="safety-map-page">
+
+    <div class="map-heading">
+        <h1>Safety <span>Map</span></h1>
+        <p>
+            Explore real road safety information across Bhubaneswar.
+        </p>
+    </div>
+
+    <div class="safety-map-card">
+
+        <!-- MAP HEADER -->
+        <div class="map-top">
+
+            <div class="map-title">
+                <i class="fa-solid fa-map-location-dot"></i>
+                Bhubaneswar Safety Network
+            </div>
+
+            <div class="legend">
+
+                <div class="legend-item">
+                    <span class="dot very-safe"></span>
+                    Very Safe
+                </div>
+
+                <div class="legend-item">
+                    <span class="dot safe"></span>
+                    Safe
+                </div>
+
+                <div class="legend-item">
+                    <span class="dot moderate"></span>
+                    Moderate
+                </div>
+
+                <div class="legend-item">
+                    <span class="dot high-risk"></span>
+                    High Risk
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- REAL LEAFLET MAP -->
+        <div id="safetyMap"></div>
+
+        <!-- MAP INFORMATION -->
+        <div class="map-info">
+
+            <div class="map-stats">
+
+                <div class="map-stat">
+                    <strong>15,627</strong>
+                    <span>Road Segments</span>
+                </div>
+
+                <div class="map-stat">
+                    <strong>48.27</strong>
+                    <span>Network Safety</span>
+                </div>
+
+                <div class="map-stat">
+                    <strong id="selectedScore">--</strong>
+                    <span>Selected Road Safety</span>
+                </div>
+
+            </div>
+
+            <div class="road-info">
+                <strong id="roadCategory">
+                    Select a road
+                </strong>
+
+                <span id="roadDetails">
+                    Click any road segment on the map.
+                </span>
+            </div>
+
+            <a href="/" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Home
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+<script>
+
+    // =========================================================
+    // INITIALIZE MAP
+    // =========================================================
+
+    const map = L.map("safetyMap").setView(
+        [20.2961, 85.8245],
+        13
+    );
+    let selectedLayer = null;
+
+
+    // OpenStreetMap base layer
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri &mdash; OpenStreetMap contributors'
+    }).addTo(map);
+
+
+    // =========================================================
+    // SAFETY COLORS
+    // =========================================================
+
+    function getSafetyColor(score) {
+
+        if (score >= 70) {
+            return "#16a34a";
+        }
+
+        if (score >= 50) {
+            return "#22c55e";
+        }
+
+        if (score >= 30) {
+            return "#f59e0b";
+        }
+
+        return "#ef4444";
+    }
+
+
+    function getSafetyCategory(score) {
+
+        if (score >= 70) {
+            return "Very Safe";
+        }
+
+        if (score >= 50) {
+            return "Safe";
+        }
+
+        if (score >= 30) {
+            return "Moderate";
+        }
+
+        return "High Risk";
+    }
+
+
+    // =========================================================
+    // LOAD REAL GEOJSON FROM DJANGO
+    // =========================================================
+
+    fetch("/safety-map-data/")
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error(
+                    "Unable to load safety map data."
+                );
+            }
+
+            return response.json();
+        })
+
+        .then(data => {
+
+            console.log(
+                "GeoJSON loaded:",
+                data
+            );
+
+
+            // =================================================
+            // DISPLAY ROAD NETWORK
+            // =================================================
+
+            const roadLayer = L.geoJSON(
+                data,
+                {
+
+                    style: function(feature) {
+
+                        const score =
+                            Number(
+                                feature.properties.safety_score
+                            ) || 0;
+
+                        return {
+                            color: getSafetyColor(score),
+                            weight: 3,
+                            opacity: 0.8
+                        };
+                    },
+
+
+                    onEachFeature:
+                    function(feature, layer) {
+
+                        const properties =
+                            feature.properties || {};
+
+                        const score =
+                            Number(
+                                properties.safety_score
+                            ) || 0;
+
+                        const category =
+                            properties.safety_category ||
+                            getSafetyCategory(score);
+
+
+                        // -----------------------------------------
+                        // Popup
+                        // -----------------------------------------
+
+                        layer.bindPopup(`
+                                <div style="
+                                    min-width:260px;
+                                    font-family:Arial,sans-serif;
+                                ">
+
+                                    <h3 style="
+                                        margin:0 0 15px 0;
+                                        color:#12343b;
+                                        border-bottom:1px solid #ddd;
+                                        padding-bottom:10px;
+                                    ">
+                                        🛣️ Road Safety Details
+                                    </h3>
+
+                                    <div style="margin-bottom:10px;">
+                                        <b>Road ID:</b>
+                                        ${properties.road_id || "N/A"}
+                                    </div>
+
+                                    <div style="margin-bottom:10px;">
+                                        <b>Safety Score:</b>
+                                        ${score.toFixed(2)}/100
+                                    </div>
+
+                                    <div style="margin-bottom:10px;">
+                                        <b>Category:</b>
+                                        ${category}
+                                    </div>
+
+                                    <div style="margin-bottom:10px;">
+                                        <b>Road Length:</b>
+                                        ${properties.road_length_m
+                                            ? Number(properties.road_length_m).toFixed(2) + " m"
+                                            : "N/A"}
+                                    </div>
+
+                                    <hr style="border:0;border-top:1px solid #ddd;">
+
+                                    <div style="margin-bottom:8px;">
+                                        🏥 <b>Hospital:</b>
+                                        ${properties.nearest_hospital_distance_m
+                                            ? Number(properties.nearest_hospital_distance_m).toFixed(0) + " m"
+                                            : "N/A"}
+                                    </div>
+
+                                    <div style="margin-bottom:8px;">
+                                        👮 <b>Police:</b>
+                                        ${properties.nearest_police_distance_m
+                                            ? Number(properties.nearest_police_distance_m).toFixed(0) + " m"
+                                            : "N/A"}
+                                    </div>
+
+                                    <div style="margin-bottom:8px;">
+                                        📹 <b>CCTV:</b>
+                                        ${properties.nearest_cctv_distance_m
+                                            ? Number(properties.nearest_cctv_distance_m).toFixed(0) + " m"
+                                            : "N/A"}
+                                    </div>
+
+                                    <div>
+                                        💡 <b>Street Light:</b>
+                                        ${properties.nearest_street_light_distance_m
+                                            ? Number(properties.nearest_street_light_distance_m).toFixed(0) + " m"
+                                            : "N/A"}
+                                    </div>
+
+                                </div>
+                            `);
+
+
+                                // -----------------------------------------
+                                // Click event
+                                // -----------------------------------------
+
+                                                        layer.on(
+                            "click",
+                            function() {
+
+                                // Reset previously selected road
+                                if (selectedLayer && selectedLayer !== layer) {
+                                    selectedLayer.setStyle({
+                                        weight: 3,
+                                        opacity: 0.8
+                                    });
+                                }
+
+                                // Highlight selected road
+                                layer.setStyle({
+                                    weight: 7,
+                                    opacity: 1
+                                });
+
+                                selectedLayer = layer;
+
+                                // Update information panel
+                                document
+                                    .getElementById("selectedScore")
+                                    .textContent = score.toFixed(2);
+
+                                document
+                                    .getElementById("roadCategory")
+                                    .textContent = category;
+
+                                document
+                                    .getElementById("roadDetails")
+                                    .textContent =
+                                    `Road ID: ${
+                                        properties.road_id || "N/A"
+                                    }`;
+                            }    
+                        );
+
+
+                        // -----------------------------------------
+                        // Hover effect
+                        // -----------------------------------------
+
+                        layer.on(
+                            "mouseover",
+                            function() {
+
+                                layer.setStyle({
+                                    weight: 6,
+                                    opacity: 1
+                                });
+
+                            }
+                        );
+
+
+                        layer.on(
+    "mouseout",
+    function() {
+
+        // Keep selected road highlighted
+        if (selectedLayer !== layer) {
+
+            layer.setStyle({
+                weight: 3,
+                opacity: 0.8
+            });
+
+        }
+
+    }
+);
+                    }
+
+                }
+            ).addTo(map);
+
+
+            // Fit map to actual road network
+            map.fitBounds(
+                roadLayer.getBounds()
+            );
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Safety map error:",
+                error
+            );
+
+            alert(
+                "Unable to load the Safety Map data."
+            );
+
+        });
+
+</script>
+
+</body>
+</html>

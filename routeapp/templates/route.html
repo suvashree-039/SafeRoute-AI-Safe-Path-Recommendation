@@ -1,0 +1,839 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Safe Route | SafePath</title>
+
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        body {
+            background: #07111f;
+            color: #ffffff;
+            font-family: "Inter", sans-serif;
+            margin: 0;
+        }
+
+        .route-page {
+            min-height: 100vh;
+        }
+
+        .route-header {
+            padding: 25px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .brand i {
+            color: #00d9ff;
+        }
+
+        .back-btn {
+            color: #b8c7d9;
+            text-decoration: none;
+            padding: 10px 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .back-btn:hover {
+            color: #00d9ff;
+            border-color: #00d9ff;
+        }
+
+        .route-container {
+            width: 88%;
+            max-width: 1400px;
+            margin: 35px auto;
+        }
+
+        .route-title {
+            margin-bottom: 25px;
+        }
+
+        .route-title h1 {
+            font-size: 38px;
+            margin-bottom: 8px;
+        }
+
+        .route-title p {
+            color: #8fa4bb;
+        }
+
+        .route-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 25px;
+        }
+
+        .route-card {
+            background: rgba(15, 29, 48, 0.95);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        .route-card h2 {
+            margin-top: 0;
+        }
+
+        .location-box {
+            margin-bottom: 18px;
+        }
+
+        .location-box label {
+            display: block;
+            color: #9fb1c6;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            color: #00d9ff;
+        }
+
+        .location-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px 15px 14px 42px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: #091827;
+            color: white;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .location-input:focus {
+            border-color: #00d9ff;
+        }
+
+        .location-btn {
+            width: 100%;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #00d9ff, #087cf5);
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .location-btn:hover {
+            opacity: 0.9;
+        }
+
+        .use-location {
+            background: transparent;
+            border: 1px solid rgba(0,217,255,0.4);
+            color: #00d9ff;
+        }
+
+        .swap-btn {
+            display: block;
+            margin: -5px auto 10px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: #0b1d30;
+            color: #00d9ff;
+            cursor: pointer;
+        }
+
+        #map {
+            width: 100%;
+            height: 570px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .result-panel {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-panel.show {
+            display: block;
+        }
+
+        .score {
+            font-size: 42px;
+            font-weight: 800;
+            color: #00e6a8;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .result-item span:first-child {
+            color: #8fa4bb;
+        }
+
+        .status-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(0,217,255,0.08);
+            color: #9edff0;
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .route-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #map {
+                height: 450px;
+            }
+        }
+                .risk-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: rgba(32, 224, 255, 0.15);
+            color: #20e0ff;
+            border: 1px solid rgba(32, 224, 255, 0.4);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .travel-time-section {
+                margin: 18px 0;
+            }
+
+            .travel-time-section label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #dbeafe;
+            }
+
+            .travel-time-section select {
+                width: 100%;
+                padding: 13px 15px;
+                border-radius: 10px;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                background: #111827;
+                color: white;
+                font-size: 15px;
+                outline: none;
+                cursor: pointer;
+            }
+
+            .travel-time-section select:focus {
+                border-color: #4f7cff;
+                box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.15);
+            }
+    </style>
+</head>
+
+<body>
+
+<div class="route-page">
+
+    <header class="route-header">
+
+        <a href="/" class="brand">
+            <i class="fa-solid fa-shield-heart"></i>
+            SafePath
+        </a>
+
+        <a href="/" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Home
+        </a>
+
+    </header>
+
+
+    <main class="route-container">
+
+        <div class="route-title">
+            <h1>Find Your Safe Route</h1>
+            <p>
+                Choose your starting point and destination.
+                SafePath will calculate a safer route using the safety network.
+            </p>
+        </div>
+
+
+        <div class="route-grid">
+
+            <!-- LEFT CONTROL PANEL -->
+
+            <div>
+
+                <div class="route-card">
+
+                    <h2>
+                        <i class="fa-solid fa-route"></i>
+                        Route Planner
+                    </h2>
+
+                    <div class="location-box">
+
+                        <label>Current Location</label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+            <input
+                type="text"
+                id="startLocation"
+                class="location-input"
+                placeholder="Enter place name or latitude, longitude"
+                autocomplete="off"
+            >
+            <div id="startSuggestions" class="suggestions-box"></div>
+                        </div>
+
+                    </div>
+
+
+                    <button class="swap-btn" onclick="swapLocations()">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </button>
+
+
+                    <div class="location-box">
+
+                        <label>Destination</label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-flag-checkered"></i>
+
+                            <input
+                                type="text"
+                                id="destination"
+                                class="location-input"
+                                placeholder="Enter destination"
+                            >
+                            <div id="destinationSuggestions" class="suggestions-box"></div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="travel-time-section">
+
+                        <label for="travelTime">
+                            🕐 When do you want to travel?
+                        </label>
+
+                        <select id="travelTime">
+                            <option value="morning">🌅 Morning</option>
+                            <option value="noon">☀️ Noon</option>
+                            <option value="evening">🌇 Evening</option>
+                            <option value="night">🌙 Night</option>
+                        </select>
+
+                    </div>
+
+
+                    <button
+                        class="location-btn use-location"
+                        onclick="useCurrentLocation()">
+
+                        <i class="fa-solid fa-crosshairs"></i>
+                        Use My Current Location
+
+                    </button>
+
+
+                    <button
+                        class="location-btn"
+                        onclick="findSafeRoute()">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Find Safe Route
+
+                    </button>
+
+
+                    <div id="statusMessage" class="status-message"></div>
+
+                </div>
+
+
+                <!-- RESULT -->
+
+                <div id="resultPanel" class="route-card result-panel">
+
+                    <h2>
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Route Safety
+                    </h2>
+
+                    <div class="score">
+                        <span id="safetyScore">--</span>/100
+                    </div>
+
+                    <div class="result-item">
+                        <span>Risk Category</span>
+                        <strong id="riskCategory" class="risk-badge">--</strong>
+                    </div>
+
+                    <div class="result-item">
+                        <span>Distance</span>
+                        <strong id="routeDistance">--</strong>
+                    </div>
+
+                    <div class="result-item">
+                        <span>Route Status</span>
+                        <strong id="routeStatus">--</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MAP -->
+
+            <div>
+
+                <div id="map"></div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+    // --------------------------------------------------
+    // MAP INITIALIZATION
+    // --------------------------------------------------
+
+    const map = L.map("map").setView(
+        [20.2961, 85.8245],
+        13
+    );
+
+   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri &mdash; OpenStreetMap contributors'
+    }).addTo(map);
+
+
+    let startMarker = null;
+    let destinationMarker = null;
+    let safeRouteLine = null;
+
+
+    // --------------------------------------------------
+    // USE CURRENT LOCATION
+    // --------------------------------------------------
+
+    function useCurrentLocation() {
+
+        if (!navigator.geolocation) {
+
+            showStatus(
+                "Geolocation is not supported by your browser."
+            );
+
+            return;
+        }
+
+        showStatus("Detecting your current location...");
+
+        navigator.geolocation.getCurrentPosition(
+
+            function(position) {
+
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                document.getElementById("startLocation").value =
+                    lat.toFixed(6) + ", " + lon.toFixed(6);
+
+                if (startMarker) {
+                    map.removeLayer(startMarker);
+                }
+
+                startMarker = L.marker([lat, lon])
+                    .addTo(map)
+                    .bindPopup("Current Location")
+                    .openPopup();
+
+                map.setView([lat, lon], 15);
+
+                showStatus(
+                    "Current location detected successfully."
+                );
+            },
+
+            function() {
+
+                showStatus(
+                    "Unable to access your location."
+                );
+            }
+        );
+    }
+
+
+    // --------------------------------------------------
+    // SWAP LOCATIONS
+    // --------------------------------------------------
+
+    function swapLocations() {
+
+        const start =
+            document.getElementById("startLocation");
+
+        const destination =
+            document.getElementById("destination");
+
+        const temp = start.value;
+
+        start.value = destination.value;
+        destination.value = temp;
+    }
+
+
+    // --------------------------------------------------
+    // SAFE ROUTE
+    // --------------------------------------------------
+
+    async function findSafeRoute() {
+
+        const start =
+            document.getElementById("startLocation").value.trim();
+
+        const destination =
+            document.getElementById("destination").value.trim();
+
+
+        if (!start || !destination) {
+
+            showStatus(
+                "Please enter both current location and destination."
+            );
+
+            return;
+        }
+
+
+        showStatus(
+            "Calculating your safest route..."
+        );
+
+
+        try {
+
+            const response = await fetch(
+                "/calculate-route/",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                     body: JSON.stringify({
+                        start: start,
+                        destination: destination,
+                        travel_time: travelTime
+                    })
+                }
+            );
+
+
+            const data = await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error || "Unable to calculate route."
+                );
+            }
+
+
+            displayRoute(data);
+
+        }
+
+        catch (error) {
+
+            showStatus(
+                error.message
+            );
+
+        }
+
+    }
+
+
+    // --------------------------------------------------
+    // DISPLAY ROUTE
+    // --------------------------------------------------
+
+    function displayRoute(data) {
+
+        document.getElementById(
+            "resultPanel"
+        ).classList.add("show");
+
+
+        document.getElementById(
+            "safetyScore"
+        ).textContent =
+            Number(data.safety_score).toFixed(1);
+
+
+        document.getElementById(
+            "riskCategory"
+        ).textContent =
+            data.safety_category;
+        const scoreElement =
+        document.getElementById("safetyScore");
+
+        if (
+            data.safety_category === "Very Safe" ||
+            data.safety_category === "Safe"
+        ) {
+            scoreElement.style.color = "#00e6a8";
+        }
+        else if (data.safety_category === "Moderate") {
+            scoreElement.style.color = "#ffb020";
+        }
+        else {
+            scoreElement.style.color = "#ff4d5a";
+        }
+
+        document.getElementById(
+            "routeDistance"
+        ).textContent =
+            Number(data.distance_km).toFixed(2) + " km";
+
+
+        document.getElementById(
+            "routeStatus"
+        ).textContent =
+            data.route_quality || "Safe Route";
+
+
+        if (safeRouteLine) {
+            map.removeLayer(safeRouteLine);
+
+        }
+
+
+        if (startMarker) {
+            map.removeLayer(startMarker);
+        }
+
+
+        if (destinationMarker) {
+            map.removeLayer(destinationMarker);
+        }
+
+
+        startMarker = L.marker(
+            data.start
+        )
+        .addTo(map)
+        .bindPopup("Start");
+
+
+        destinationMarker = L.marker(
+            data.destination
+        )
+        .addTo(map)
+        .bindPopup("Destination");
+
+
+        safeRouteLine = L.polyline(
+            data.route_coordinates,
+            {
+                weight: 7,
+                opacity: 0.9
+            }
+        ).addTo(map);
+
+
+        map.fitBounds(
+            safeRouteLine.getBounds(),
+            {
+                padding: [30, 30]
+            }
+        );
+
+
+        showStatus(
+            "Safe route calculated successfully."
+        );
+
+    }
+
+
+    // --------------------------------------------------
+    // STATUS
+    // --------------------------------------------------
+
+    function showStatus(message) {
+
+        const box =
+            document.getElementById("statusMessage");
+
+        box.textContent = message;
+
+        box.style.display = "block";
+
+    }
+    // ===============================
+// Location Suggestions
+// ===============================
+
+const commonPlaces = [
+    "Bhubaneswar",
+    "Cuttack",
+    "Bhubaneswar Railway Station",
+    "Biju Patnaik International Airport",
+    "KIIT University",
+    "NIELIT Bhubaneswar",
+    "Kalinga Stadium",
+    "Master Canteen",
+    "Jaydev Vihar",
+    "Patia",
+    "Saheed Nagar",
+    "Rasulgarh",
+    "Chandrasekharpur",
+    "Khandagiri",
+    "Baramunda",
+    "Old Town Bhubaneswar",
+    "Cuttack Railway Station",
+    "SCB Medical College Cuttack"
+];
+
+function setupSuggestions(inputId, suggestionsId) {
+
+    const input = document.getElementById(inputId);
+    const suggestions = document.getElementById(suggestionsId);
+
+    if (!input || !suggestions) return;
+
+    input.addEventListener("input", function () {
+
+        const text = input.value.trim().toLowerCase();
+
+        suggestions.innerHTML = "";
+
+        if (!text) {
+            suggestions.style.display = "none";
+            return;
+        }
+
+        const matches = commonPlaces.filter(place =>
+            place.toLowerCase().includes(text)
+        );
+
+        if (matches.length === 0) {
+            suggestions.style.display = "none";
+            return;
+        }
+
+        matches.slice(0, 6).forEach(place => {
+
+            const item = document.createElement("div");
+
+            item.className = "suggestion-item";
+            item.textContent = place;
+
+            item.addEventListener("click", function () {
+
+                input.value = place;
+                suggestions.innerHTML = "";
+                suggestions.style.display = "none";
+
+            });
+
+            suggestions.appendChild(item);
+
+        });
+
+        suggestions.style.display = "block";
+    });
+
+    document.addEventListener("click", function (event) {
+
+        if (!input.contains(event.target) &&
+            !suggestions.contains(event.target)) {
+
+            suggestions.style.display = "none";
+
+        }
+
+    });
+}
+
+
+// Start location suggestions
+setupSuggestions(
+    "startLocation",
+    "startSuggestions"
+);
+
+
+// Destination suggestions
+setupSuggestions(
+    "destination",
+    "destinationSuggestions"
+);
+
+</script>
+
+</body>
+</html>
