@@ -145,29 +145,39 @@ def parse_location(location_text):
 def geocode_place(place_name):
 
     try:
+        if not place_name:
+            return None
+
+        place_name = place_name.strip()
 
         url = "https://nominatim.openstreetmap.org/search"
 
         params = {
             "q": place_name,
             "format": "json",
-            "limit": 1
+            "limit": 1,
+            "countrycodes": "in"
         }
 
         headers = {
-            "User-Agent": "SafePath-Django-Project/1.0"
+            "User-Agent": "SafePath-Django-Project/1.0 (SafeRoute educational project)"
         }
 
         response = requests.get(
             url,
             params=params,
             headers=headers,
-            timeout=10
+            timeout=20
         )
+
+        print("GEOCODING STATUS:", response.status_code, flush=True)
+        print("GEOCODING QUERY:", place_name, flush=True)
 
         response.raise_for_status()
 
         results = response.json()
+
+        print("GEOCODING RESULTS:", results, flush=True)
 
         if not results:
             return None
@@ -177,10 +187,13 @@ def geocode_place(place_name):
 
         return lat, lon
 
-    except Exception:
+    except requests.exceptions.RequestException as e:
+        print("GEOCODING REQUEST ERROR:", str(e), flush=True)
         return None
 
-
+    except Exception as e:
+        print("GEOCODING ERROR:", str(e), flush=True)
+        return None
 # ============================================================
 # FIND NEAREST GRAPH NODE
 # ============================================================
