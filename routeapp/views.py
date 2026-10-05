@@ -138,9 +138,39 @@ def parse_location(location_text):
     return None
 
 
+
+
+
 # ============================================================
 # PLACE NAME GEOCODING
 # ============================================================
+
+LOCAL_PLACES = {
+    "bhubaneswar": (20.2961, 85.8245),
+    "kiit university": (20.3547, 85.8180),
+    "kiit": (20.3547, 85.8180),
+    "patia": (20.3547, 85.8180),
+    "khandagiri": (20.2530, 85.7800),
+    "jaydev vihar": (20.2974, 85.8179),
+    "master canteen": (20.2660, 85.8430),
+    "railway station": (20.2644, 85.8420),
+    "bhubaneswar railway station": (20.2644, 85.8420),
+    "airport": (20.2520, 85.8170),
+    "bhubaneswar airport": (20.2520, 85.8170),
+    "baramunda": (20.2650, 85.8030),
+    "sahid nagar": (20.2920, 85.8410),
+    "saheed nagar": (20.2920, 85.8410),
+    "rasulgarh": (20.3000, 85.8650),
+    "unit 1": (20.2660, 85.8430),
+    "unit 2": (20.2760, 85.8450),
+    "unit 3": (20.2820, 85.8410),
+    "unit 4": (20.2860, 85.8380),
+    "unit 5": (20.2920, 85.8350),
+    "old town": (20.2440, 85.8330),
+    "infocity": (20.3500, 85.8190),
+    "bbsr": (20.2961, 85.8245),
+}
+
 
 def geocode_place(place_name):
     try:
@@ -148,18 +178,30 @@ def geocode_place(place_name):
             return None
 
         place_name = place_name.strip()
+        place_key = place_name.lower()
 
+        # Check local places first
+        if place_key in LOCAL_PLACES:
+            print(
+                "LOCAL PLACE FOUND:",
+                place_name,
+                LOCAL_PLACES[place_key],
+                flush=True
+            )
+            return LOCAL_PLACES[place_key]
+
+        # Try Nominatim for other places
         url = "https://nominatim.openstreetmap.org/search"
 
         params = {
-            "q": place_name,
+            "q": place_name + ", Bhubaneswar, Odisha, India",
             "format": "json",
             "limit": 1,
             "countrycodes": "in"
         }
 
         headers = {
-            "User-Agent": "SafePath-Django-Project/1.0 (SafeRoute educational project)"
+            "User-Agent": "SafePath-Django-Project/1.0"
         }
 
         response = requests.get(
@@ -169,14 +211,22 @@ def geocode_place(place_name):
             timeout=20
         )
 
-        print("GEOCODING STATUS:", response.status_code, flush=True)
-        print("GEOCODING QUERY:", place_name, flush=True)
+        print(
+            "GEOCODING STATUS:",
+            response.status_code,
+            flush=True
+        )
+
+        if response.status_code == 429:
+            print(
+                "NOMINATIM RATE LIMIT",
+                flush=True
+            )
+            return None
 
         response.raise_for_status()
 
         results = response.json()
-
-        print("GEOCODING RESULTS:", results, flush=True)
 
         if not results:
             return None
@@ -187,11 +237,19 @@ def geocode_place(place_name):
         return lat, lon
 
     except requests.exceptions.RequestException as e:
-        print("GEOCODING REQUEST ERROR:", str(e), flush=True)
+        print(
+            "GEOCODING REQUEST ERROR:",
+            str(e),
+            flush=True
+        )
         return None
 
     except Exception as e:
-        print("GEOCODING ERROR:", str(e), flush=True)
+        print(
+            "GEOCODING ERROR:",
+            str(e),
+            flush=True
+        )
         return None
 # ============================================================
 # FIND NEAREST GRAPH NODE
