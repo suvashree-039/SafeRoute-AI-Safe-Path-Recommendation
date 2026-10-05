@@ -143,7 +143,6 @@ def parse_location(location_text):
 # ============================================================
 
 def geocode_place(place_name):
-
     try:
         if not place_name:
             return None
