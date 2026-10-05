@@ -24,7 +24,7 @@ Thumbs.db
 .pytest_cache/
 
 # Large generated files
-*.pkl
+
 *.joblib
 
 # Temporary files
